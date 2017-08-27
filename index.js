@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const DotaTriviaGame = require('./dotaTriviaGame.js');
 const DotaItemStore = require('./dotaItemStore.js');
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 class EntryPoint {
     constructor() {
