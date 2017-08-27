@@ -1,4 +1,4 @@
-const DotaItemStore = require('./dotaItemStore.js'); 
+const DotaItemStore = require('./DotaItemStore.js'); 
 
 module.exports = class DotaTriviaGame { 
     /*

@@ -1,8 +1,8 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const DotaTriviaGame = require('./dotaTriviaGame.js');
-const DotaItemStore = require('./dotaItemStore.js');
+const DotaTriviaGame = require('./DotaTriviaGame.js');
+const DotaItemStore = require('./DotaItemStore.js');
 
 const port = process.env.PORT || 3000;
 
