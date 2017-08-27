@@ -22,24 +22,28 @@ class EntryPoint {
         this.app.use(bodyParser.json());
         
         this.app.get('/', (req, res) => {
-            if (req.session.game === undefined) {
-                req.session.game = new DotaTriviaGame(this.itemStore);
+            let game = null;
+            if (req.session.state === undefined) {
+                game = new DotaTriviaGame(this.itemStore);
+                req.session.state = game.state;
+            } else {
+                game = new DotaItemStore(this.itemStore, req.session.state);
             }
-            var nextQuestion = req.session.game.getNextQuestion();
+            let nextQuestion = game.getNextQuestion();
             req.session.currentQuestion = nextQuestion;
             res.send(nextQuestion);
         });
         
         this.app.post('/', (req, res) => {
-            var game = req.session.game;
-            var answer = req.body.answer;
-            if(game === undefined) {
+            if(req.session.state === undefined) {
                 res.statusCode = 409;
                 res.send('game state is undefined');
                 return;
             }
-            var state = game.submitAnswer(answer);
-            res.send(state);
+            let game = new DotaTriviaGame(req.session.state);
+            let answer = req.body.answer;
+            req.session.state = game.submitAnswer(answer);
+            res.send(req.session.state);
         });
         
         this.app.listen(port, _ => {

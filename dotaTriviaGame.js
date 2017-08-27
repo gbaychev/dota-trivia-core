@@ -1,15 +1,28 @@
 const DotaItemStore = require('./dotaItemStore.js'); 
 
 module.exports = class DotaTriviaGame { 
-    constructor (itemStore) {
+    /*
+     * default constructor
+     * @param itemStore - the dota item store - required
+     * @param state - the current state of the game - optional
+     */
+    constructor () {
         console.log('game ctor');
-        this.state = {
-            gameOver : false,
-            currentStreak : 0,
-            score : 0,
-            retries : 3
+        if(arguments.length == 0) {
+            throw new Error("You need to pass an item store and/or game state");
         }
-        this.itemStore = itemStore;
+        this.itemStore = arguments[0];
+
+        if(arguments.length == 1) {
+            this.state = {
+                gameOver : false,
+                currentStreak : 0,
+                score : 0,
+                retries : 3
+            }
+        } else {
+            this.itemStore = arguments[1];
+        }   
     }
 
     checkAnswer(currentQuestion, answer) {
