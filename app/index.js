@@ -27,7 +27,7 @@ class EntryPoint {
                 game = new DotaTriviaGame(this.itemStore);
                 req.session.state = game.state;
             } else {
-                game = new DotaItemStore(this.itemStore, req.session.state);
+                game = new DotaTriviaGame(this.itemStore, req.session.state);
             }
             let nextQuestion = game.getNextQuestion();
             req.session.currentQuestion = nextQuestion;

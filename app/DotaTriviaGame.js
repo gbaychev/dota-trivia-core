@@ -21,7 +21,7 @@ module.exports = class DotaTriviaGame {
                 retries : 3
             }
         } else {
-            this.itemStore = arguments[1];
+            this.state = arguments[1];
         }   
     }
 

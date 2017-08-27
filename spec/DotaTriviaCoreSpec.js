@@ -1,4 +1,4 @@
-var request = require("request");
+const request = require("request").defaults({jar: true});
 
 const baseUrl = "http://localhost:3000";
 
