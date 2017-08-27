@@ -1,0 +1,17 @@
+{
+  "name": "dota-trivia-core",
+  "version": "1.0.0",
+  "description": "The backend for dota trivia",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Georgi Baychev",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "express-session": "^1.15.5"
+  }
+}
