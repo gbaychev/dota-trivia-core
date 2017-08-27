@@ -22,6 +22,7 @@ class EntryPoint {
         this.app.use(bodyParser.json());
         
         this.app.get('/', (req, res) => {
+            throw new Error();
             let game = null;
             if (req.session.state === undefined) {
                 game = new DotaTriviaGame(this.itemStore);
