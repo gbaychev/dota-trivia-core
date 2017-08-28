@@ -33,6 +33,10 @@ class EntryPoint {
             req.session.currentQuestion = nextQuestion;
             res.send(nextQuestion);
         });
+
+        this.app.get("/env", (req, res) => {
+            res.json(process.env);
+        });
         
         this.app.post('/', (req, res) => {
             if(req.session.state === undefined) {
