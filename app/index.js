@@ -3,6 +3,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const DotaTriviaGame = require('./DotaTriviaGame.js');
 const DotaItemStore = require('./DotaItemStore.js');
+const crypto = require('crypto');
 
 const port = process.env.PORT || 3000;
 
@@ -13,8 +14,18 @@ class EntryPoint {
     }
 
     initEndpoints () {
+        let cookieKey = "";
+
+        if(process.env.cookie_key === undefined ||
+           process.env.cookie_key === "") {
+            const buf = Buffer.alloc(48);
+            cookieKey = crypto.randomFillSync(buf).toString('hex');
+        } else {
+            cookieKey = process.env.cookie_key;       
+        }
+
         this.app.use(session({
-            secret: 'keyboard cat',
+            secret: cookieKey,
             resave: false,
             saveUninitialized: false
         }));
