@@ -37,12 +37,15 @@ class EntryPoint {
             if (req.session.state === undefined) {
                 game = new DotaTriviaGame(this.itemStore);
                 req.session.state = game.state;
+                req.session.currentQuestion = game.getNextQuestion();
             } else {
                 game = new DotaTriviaGame(this.itemStore, req.session.state);
+                if(req.session.answeredLastQuestionCorrectly === true) {
+                    req.session.currentQuestion = game.getNextQuestion();
+                }
             }
-            let nextQuestion = game.getNextQuestion();
-            req.session.currentQuestion = nextQuestion;
-            res.send(nextQuestion);
+            
+            res.send(req.session.currentQuestion);
         });
         
         this.app.post('/', (req, res) => {
@@ -53,7 +56,9 @@ class EntryPoint {
             }
             let game = new DotaTriviaGame(req.session.state);
             let answer = req.body.answer;
-            req.session.state = game.submitAnswer(answer);
+            let answerCheck = game.submitAnswer(answer);
+            req.session.answeredLastQuestionCorrectly = answerCheck.isAnswerCorrect;
+            req.session.state = answerCheck.state;
             res.send(req.session.state);
         });
         

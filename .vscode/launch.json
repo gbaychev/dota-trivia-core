@@ -9,6 +9,18 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceRoot}\\app\\index.js"
+        },
+        {
+            "name": "Debug Tests",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/jasmine/bin/jasmine",
+            "stopOnEntry": false,
+            "cwd": "${workspaceRoot}",
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceRoot}/spec"                
+            ]
         }
     ]
 }
