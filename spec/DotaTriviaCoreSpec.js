@@ -1,11 +1,12 @@
 const request = require("request").defaults({jar: true});
 request.debug = true;
+var j = request.jar();
 
 const baseUrl = "http://localhost:3000";
 
 const getDotaItem = () => {
     return new Promise((resolve, reject)=> {
-        request.get(baseUrl, (error, response, body) => {
+        request.get(baseUrl, {jar: j}, (error, response, body) => {
             if(error !== undefined && error !== null) { 
                 reject(error);
             }
@@ -19,8 +20,32 @@ const getDotaItem = () => {
     });
 };
 
+const sendAnswer = (answer) => {
+    return new Promise((resolve, reject) => {
+        request.post(baseUrl, {body: answer, json: true, jar: j} , (error, response, body) => {
+            if(error !== undefined && error !== null) { 
+                reject(error);
+            }
+
+            if(response.statusCode >= 400) {
+                reject(new Error(response.statusCode))
+            }
+
+            resolve(response);
+        })
+    });
+}
+
 describe("Dota Trivia Core", () => {
     describe("GET /", () => {
+        beforeAll(() => {
+            j._jar.store.removeCookies("localhost", "/", e => {
+                if(e) {
+                    console.error(e);
+                }
+            });
+        });
+
         it("has properly working session", done => {
             getDotaItem().then(response => {
                 expect(response.statusCode).toBe(200);
@@ -55,6 +80,23 @@ describe("Dota Trivia Core", () => {
                 fail(e);
                 done();
             });
+        });
+    });
+
+    describe("POST /",() => {
+        beforeAll(() => {
+            j._jar.store.removeCookies("localhost", "/", e => {
+                if(e) {
+                    console.error(e);
+                }
+            });
+        });
+
+        it("gets 409, when sending answer without session", done => {
+            sendAnswer().catch(e => {
+                expect(parseInt(e.message)).toBe(409);
+                done();
+            })
         });
     });
 });

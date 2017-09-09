@@ -48,7 +48,7 @@ module.exports = class DotaTriviaGame {
      * @param answer, submitted by the user
      */
     submitAnswer (currentQuestion, answer) {
-        let isAnswerCorrect = checkAnswer(currentQuestion, answer);
+        let isAnswerCorrect = this.checkAnswer(currentQuestion, answer);
         if (isAnswerCorrect) {
             this.state.currentStreak++;
             this.state.score += 100;
