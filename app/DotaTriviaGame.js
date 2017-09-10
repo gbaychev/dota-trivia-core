@@ -9,7 +9,7 @@ module.exports = class DotaTriviaGame {
     constructor () {
         console.log('game ctor');
         if(arguments.length == 0) {
-            throw new Error("You need to pass an item store and/or game state");
+            throw new Error('You need to pass an item store and/or game state');
         }
         this.itemStore = arguments[0];
 
@@ -19,7 +19,7 @@ module.exports = class DotaTriviaGame {
                 currentStreak : 0,
                 score : 0,
                 retries : 3
-            }
+            };
         } else {
             this.state = arguments[1];
         }   
@@ -65,4 +65,4 @@ module.exports = class DotaTriviaGame {
     getNextQuestion() {
         return this.itemStore.pickItem();
     }
-}
+};

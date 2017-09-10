@@ -1,4 +1,4 @@
-let DotaItemStore = require("../app/DotaItemStore");
+let DotaItemStore = require('../app/DotaItemStore');
 
 module.exports = class DotaItemStoreHelper extends DotaItemStore {
     constructor() {
@@ -13,4 +13,4 @@ module.exports = class DotaItemStoreHelper extends DotaItemStore {
 
         return this.itemsToPickFrom[result[0]];
     }
-}
+};

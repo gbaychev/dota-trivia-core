@@ -10,13 +10,13 @@ module.exports = class DotaItemStore {
         this.itemsComponents = new Array();
         this.itemsComponentsCount = 0;
         this.parseRequest = (rawData) => {
-                this.items = JSON.parse(rawData).itemdata;
-                if(this.items === undefined) {
-                    throw new Error('Could not parse items from the dota2 site');
-                }
-                this.postProcessItems();
-                this.initialized = true;
-        }
+            this.items = JSON.parse(rawData).itemdata;
+            if(this.items === undefined) {
+                throw new Error('Could not parse items from the dota2 site');
+            }
+            this.postProcessItems();
+            this.initialized = true;
+        };
     }
 
     /*
@@ -38,7 +38,7 @@ module.exports = class DotaItemStore {
                 res.on('data', chunk => rawData += chunk);
                 res.on('end', () => {
                     try {
-                        this.parseRequest(rawData)
+                        this.parseRequest(rawData);
                         resolve();
                     } catch (e) {
                         reject(e);
@@ -48,7 +48,7 @@ module.exports = class DotaItemStore {
                 console.error(`Error while initializing item store: ${e.message}`);
                 reject(e);
             });
-        })
+        });
     }
 
     /*
@@ -78,9 +78,9 @@ module.exports = class DotaItemStore {
      */
     postProcessItems() {
         let itemKeys =  Object.keys(this.items).filter(key => {
-            return (this.items[key].qual == "epic" ||
-                   this.items[key].qual == "rare" ||
-                   this.items[key].qual == "artifact") &&
+            return (this.items[key].qual == 'epic' ||
+                   this.items[key].qual == 'rare' ||
+                   this.items[key].qual == 'artifact') &&
                    this.items[key].components !== null;
         });
 
@@ -92,7 +92,7 @@ module.exports = class DotaItemStore {
         });
 
         let componentKeys = Object.keys(this.items).filter(key => {
-            return this.items[key].qual == "component";
+            return this.items[key].qual == 'component';
         });
 
         componentKeys.forEach(k => {
@@ -110,7 +110,7 @@ module.exports = class DotaItemStore {
             return;
         }
 
-        if(item.components == null || item.qual == "component")  {
+        if(item.components == null || item.qual == 'component')  {
             components.push(item);
             return;
         }
@@ -141,7 +141,7 @@ module.exports = class DotaItemStore {
         let fillers = new Array();
         let neededFillerComponentsCount = Math.max(Math.floor((3 * item.needed_components.length) / 4), 2);
         let actualFillerComponents = this.itemsComponents.filter(c => {
-           return !item.needed_components.some(nc => nc.name === c.name);
+            return !item.needed_components.some(nc => nc.name === c.name);
         });
 
         for(let i = 0; i < neededFillerComponentsCount; i++) {
@@ -151,4 +151,4 @@ module.exports = class DotaItemStore {
 
         return fillers;
     }
-}
+};

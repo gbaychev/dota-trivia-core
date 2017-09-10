@@ -14,10 +14,10 @@ class EntryPoint {
     }
 
     initEndpoints () {
-        let cookieKey = "";
+        let cookieKey = '';
 
         if(process.env.cookie_key === undefined ||
-           process.env.cookie_key === "") {
+           process.env.cookie_key === '') {
             const buf = Buffer.alloc(48);
             cookieKey = crypto.randomFillSync(buf).toString('hex');
         } else {
@@ -69,10 +69,10 @@ class EntryPoint {
 
     run () {
         this.itemStore.initialize()
-                      .then(() => this.initEndpoints())
-                      .catch(e => {
-                        console.error(`Item store failed to initialize, error: ${e.message}, exiting`);
-                      });
+            .then(() => this.initEndpoints())
+            .catch(e => {
+                console.error(`Item store failed to initialize, error: ${e.message}, exiting`);
+            });
     }
 }
 
