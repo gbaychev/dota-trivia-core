@@ -56,7 +56,7 @@ class EntryPoint {
             }
             let game = new DotaTriviaGame(req.session.state);
             let answer = req.body.answer;
-            let answerCheck = game.submitAnswer(answer);
+            let answerCheck = game.submitAnswer(req.session.currentQuestion, answer);
             req.session.answeredLastQuestionCorrectly = answerCheck.isAnswerCorrect;
             req.session.state = answerCheck.state;
             res.send(req.session.state);
@@ -68,9 +68,11 @@ class EntryPoint {
     }
 
     run () {
-        this.itemStore.initialize(() => this.initEndpoints(), () => {
-            console.error('Item store failed to initialize, exiting');
-        });
+        this.itemStore.initialize()
+                      .then(() => this.initEndpoints())
+                      .catch(e => {
+                        console.error(`Item store failed to initialize, error: ${e.message}, exiting`);
+                      });
     }
 }
 

@@ -9,52 +9,46 @@ module.exports = class DotaItemStore {
         this.itemsToPickFromCount = 0;
         this.itemsComponents = new Array();
         this.itemsComponentsCount = 0;
-        this.parseRequest = (rawData, onSuccess, onFailure) => {
-            try {
+        this.parseRequest = (rawData) => {
                 this.items = JSON.parse(rawData).itemdata;
                 if(this.items === undefined) {
-                    console.error('Could not parse items from the dota2 site');
-                    if(onFailure !== undefined) {
-                        onFailure();
-                        return;
-                    }       
+                    throw new Error('Could not parse items from the dota2 site');
                 }
                 this.postProcessItems();
                 this.initialized = true;
-                if(onSuccess !== undefined) {
-                    onSuccess();
-                }
-            } catch (e) {
-                console.error(`Error while initializing item store: ${e.message}`);
-            }
         }
     }
 
     /*
      * Fetches the item information from dota2.com
-     * @param onSuccess - a callback, called if no errors have occured
-     * @param onFailure - a callback, called if something went wrong
      */
-    initialize (onSuccess, onFailure) {
-        http.get('http://www.dota2.com/jsfeed/itemdata', (res) => {
-            const { statusCode } = res;
-            
-            if(statusCode != 200) {
-                console.error(`Request Failed. Status Code: ${statusCode}`);
-                res.resume();
-                if(onFailure !== undefined) {
-                    onFailure();
-                }
-                return;
-            }
+    initialize() {
+        return new Promise((resolve, reject) => {
+            http.get('http://www.dota2.com/jsfeed/itemdata', (res) => {
+                const { statusCode } = res;
 
-            res.setEncoding('utf8');
-            let rawData = '';
-            res.on('data', chunk => rawData += chunk);
-            res.on('end', () => this.parseRequest(rawData, onSuccess, onFailure));
-        }).on('error', (e) => {
-            console.error(`Error while initializing item store: ${e.message}`);
-        });
+                if (statusCode != 200) {
+                    console.error(`Request Failed. Status Code: ${statusCode}`);
+                    res.resume();
+                    reject(new Error(statusCode));
+                }
+
+                res.setEncoding('utf8');
+                let rawData = '';
+                res.on('data', chunk => rawData += chunk);
+                res.on('end', () => {
+                    try {
+                        this.parseRequest(rawData)
+                        resolve();
+                    } catch (e) {
+                        reject(e);
+                    }
+                });
+            }).on('error', (e) => {
+                console.error(`Error while initializing item store: ${e.message}`);
+                reject(e);
+            });
+        })
     }
 
     /*

@@ -59,7 +59,7 @@ module.exports = class DotaTriviaGame {
             this.state.currentStreak = 0;
         }
 
-        return { isAnswerCorrect, state };
+        return { isAnswerCorrect, state: this.state };
     }
 
     getNextQuestion() {

@@ -1,4 +1,5 @@
 const request = require("request").defaults({jar: true});
+const DotaItemStoreHelper = require("./helpers");
 request.debug = true;
 var j = request.jar();
 
@@ -97,6 +98,29 @@ describe("Dota Trivia Core", () => {
                 expect(parseInt(e.message)).toBe(409);
                 done();
             })
+        });
+
+        it("can accept correct answers", done => {
+            let helper = new DotaItemStoreHelper();
+            getDotaItem().then(response => {
+                expect(response.statusCode).toBe(200);
+                itemName = JSON.parse(response.body).name;
+                expect(itemName).not.toBe(undefined);
+                expect(itemName).not.toBe(null);
+                return itemName;
+            }).then(itemName => {
+                return helper.initialize();
+            }).then(() => {
+                let components = helper.getComponentsForItem(itemName);
+                return sendAnswer({ answer: components});
+            }).then(response => {
+                expect(response.statusCode).toBe(200);
+                done();
+            }).catch(e => {
+                console.error(e);
+                fail(e);
+                done();
+            });
         });
     });
 });
