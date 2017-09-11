@@ -28,7 +28,7 @@ const sendAnswer = (answer) => {
                 reject(error);
             }
 
-            if(response.statusCode >= 400) {
+            if(response.statusCode > 400) {
                 reject(new Error(response.statusCode));
             }
 
@@ -55,7 +55,6 @@ describe('Dota Trivia Core', () => {
                 expect(response.statusCode).toBe(200);
                 done();
             }).catch(e => {
-                console.error(e);
                 fail(e);
                 done();
             });
@@ -77,7 +76,6 @@ describe('Dota Trivia Core', () => {
                 expect(itemName).toBe(otherItemName);
                 done();
             }).catch(e => {
-                console.error(e);
                 fail(e);
                 done();
             });
@@ -93,34 +91,89 @@ describe('Dota Trivia Core', () => {
             });
         });
 
-        it('gets 409, when sending answer without session', done => {
-            sendAnswer().catch(e => {
-                expect(parseInt(e.message)).toBe(409);
+        it('gets 400, when sending answer without session', done => {
+            sendAnswer().then(response => {
+                expect(response.statusCode).toBe(400);
+                done();
+            }).catch(e => {
+                fail(e);
                 done();
             });
         });
 
         it('can accept correct answers', done => {
             let helper = new DotaItemStoreHelper();
-            getDotaItem().then(response => {
+            let itemName = '';
+            helper.initialize().then(() => {
+                return getDotaItem();
+            }).then(response => {
                 expect(response.statusCode).toBe(200);
                 itemName = JSON.parse(response.body).name;
                 expect(itemName).not.toBe(undefined);
                 expect(itemName).not.toBe(null);
                 return itemName;
             }).then(itemName => {
-                return helper.initialize();
-            }).then(() => {
                 let components = helper.getComponentsForItem(itemName);
                 return sendAnswer({ answer: components});
             }).then(response => {
                 expect(response.statusCode).toBe(200);
                 done();
             }).catch(e => {
-                console.error(e);
                 fail(e);
                 done();
             });
+        });
+
+        it('sends http 400 on malformed answers', done => {
+            sendAnswer(undefined).then(response => {
+                expect(response.statusCode).toBe(400);
+                return sendAnswer({});
+            }).then(response => {
+                expect(response.statusCode).toBe(400);
+                return sendAnswer([1, 2, 3]);
+            }).then(response => {
+                expect(response.statusCode).toBe(400);
+                done();
+            }).catch(e => {
+                fail(e);
+                done();
+            });
+        });
+
+        it('sends game over after 3 wrong answers', done => {
+            let helper = new DotaItemStoreHelper();
+            let itemName = '';
+            let components = undefined;
+            helper.initialize().then(() => {
+                return getDotaItem();
+            }).then(response => {
+                expect(response.statusCode).toBe(200);
+                itemName = JSON.parse(response.body).name;
+                expect(itemName).not.toBe(undefined);
+                expect(itemName).not.toBe(null);
+                return itemName;
+            }).then(itemName => {
+                components = helper.getNonAnswer(itemName);
+                return sendAnswer({answer: components});
+            }).then(response => {
+                expect(response.statusCode).toBe(200);
+                expect(response.body.retries).toBe(2);
+                expect(response.body.gameOver).toBe(false);
+                return sendAnswer({answer: components});
+            }).then(response => {
+                expect(response.statusCode).toBe(200);
+                expect(response.body.retries).toBe(1);
+                expect(response.body.gameOver).toBe(false);
+                return sendAnswer({answer: components});
+            }).then(response => {
+                expect(response.statusCode).toBe(200);
+                expect(response.body.retries).toBe(0);
+                expect(response.body.gameOver).toBe(true);
+                done();
+            }).catch(e => {
+                fail(e);
+                done();
+            })
         });
     });
 });

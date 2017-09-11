@@ -61,12 +61,12 @@ class EntryPoint {
                 res.send('no answer provided');
                 return;
             }            
-            if(!(answer instanceof Array) || answer.some(component => typeof componet !== "string")) {
+            if(!(answer instanceof Array) || answer.some(component => typeof component !== "string")) {
                 res.statusCode = 400;
                 res.send('answer is not an array of components');
                 return;
             }
-            
+
             let game = new DotaTriviaGame(req.session.state);
             let answerCheck = game.submitAnswer(req.session.currentQuestion, answer);
             req.session.answeredLastQuestionCorrectly = answerCheck.isAnswerCorrect;
