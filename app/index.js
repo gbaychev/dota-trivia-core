@@ -50,12 +50,24 @@ class EntryPoint {
         
         this.app.post('/', (req, res) => {
             if(req.session.state === undefined) {
-                res.statusCode = 409;
+                res.statusCode = 400;
                 res.send('game state is undefined');
                 return;
             }
-            let game = new DotaTriviaGame(req.session.state);
+            
             let answer = req.body.answer;
+            if(answer === undefined) {
+                res.statusCode = 400;
+                res.send('no answer provided');
+                return;
+            }            
+            if(!(answer instanceof Array) || answer.some(component => typeof componet !== "string")) {
+                res.statusCode = 400;
+                res.send('answer is not an array of components');
+                return;
+            }
+            
+            let game = new DotaTriviaGame(req.session.state);
             let answerCheck = game.submitAnswer(req.session.currentQuestion, answer);
             req.session.answeredLastQuestionCorrectly = answerCheck.isAnswerCorrect;
             req.session.state = answerCheck.state;
