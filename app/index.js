@@ -67,7 +67,7 @@ class EntryPoint {
                 return;
             }
 
-            let game = new DotaTriviaGame(req.session.state);
+            let game = new DotaTriviaGame(this.itemStore, req.session.state);
             let answerCheck = game.submitAnswer(req.session.currentQuestion, answer);
             req.session.answeredLastQuestionCorrectly = answerCheck.isAnswerCorrect;
             req.session.state = answerCheck.state;

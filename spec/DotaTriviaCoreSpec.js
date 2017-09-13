@@ -83,7 +83,7 @@ describe('Dota Trivia Core', () => {
     });
 
     describe('POST /',() => {
-        beforeAll(() => {
+        beforeEach(() => {
             j._jar.store.removeCookies('localhost', '/', e => {
                 if(e) {
                     console.error(e);
@@ -92,7 +92,9 @@ describe('Dota Trivia Core', () => {
         });
 
         it('gets 400, when sending answer without session', done => {
-            sendAnswer().then(response => {
+            getDotaItem().then(() => {
+                return sendAnswer();
+            }).then(response => {
                 expect(response.statusCode).toBe(400);
                 done();
             }).catch(e => {
@@ -125,7 +127,9 @@ describe('Dota Trivia Core', () => {
         });
 
         it('sends http 400 on malformed answers', done => {
-            sendAnswer(undefined).then(response => {
+            getDotaItem().then(() => {
+                return sendAnswer(undefined);
+            }).then(response => {
                 expect(response.statusCode).toBe(400);
                 return sendAnswer({});
             }).then(response => {
