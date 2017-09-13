@@ -66,7 +66,7 @@ class EntryPoint {
                 res.send('no answer provided');
                 return;
             }            
-            if(!(answer instanceof Array) || answer.some(component => typeof component !== "string")) {
+            if(!(answer instanceof Array) || answer.some(component => typeof component !== 'string')) {
                 winston.error(`${req.ip} ${req.session.id} POST /: malformed answer provided`);
                 res.statusCode = 400;
                 res.send('answer is not an array of components');
@@ -81,7 +81,7 @@ class EntryPoint {
             res.send(req.session.state);
         });
         
-        this.app.listen(port, _ => {
+        this.app.listen(port, () => {
             winston.info(`Listening to port ${port}`);
         });
     }

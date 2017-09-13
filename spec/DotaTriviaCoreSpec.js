@@ -177,7 +177,7 @@ describe('Dota Trivia Core', () => {
             }).catch(e => {
                 fail(e);
                 done();
-            })
+            });
         });
     });
 });
