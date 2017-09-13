@@ -1,4 +1,5 @@
 const http = require('http');
+const winston = require('winston');
 
 module.exports = class DotaItemStore {
 
@@ -28,7 +29,7 @@ module.exports = class DotaItemStore {
                 const { statusCode } = res;
 
                 if (statusCode != 200) {
-                    console.error(`Request Failed. Status Code: ${statusCode}`);
+                    winston.error(`Request Failed. Status Code: ${statusCode}`);
                     res.resume();
                     reject(new Error(statusCode));
                 }
@@ -45,7 +46,7 @@ module.exports = class DotaItemStore {
                     }
                 });
             }).on('error', (e) => {
-                console.error(`Error while initializing item store: ${e.message}`);
+                winston.error(`Error while initializing item store: ${e.message}`);
                 reject(e);
             });
         });

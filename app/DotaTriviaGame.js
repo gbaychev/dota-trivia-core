@@ -7,7 +7,6 @@ module.exports = class DotaTriviaGame {
      * @param state - the current state of the game - optional
      */
     constructor () {
-        console.log('game ctor');
         if(arguments.length == 0) {
             throw new Error('You need to pass an item store and/or game state');
         }

@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const DotaTriviaGame = require('./DotaTriviaGame.js');
 const DotaItemStore = require('./DotaItemStore.js');
 const crypto = require('crypto');
+const winston = require('winston');
 
 const port = process.env.PORT || 3000;
 
@@ -35,10 +36,12 @@ class EntryPoint {
         this.app.get('/', (req, res) => {
             let game = null;
             if (req.session.state === undefined) {
+                winston.info(`GET /: Starting new session`);
                 game = new DotaTriviaGame(this.itemStore);
                 req.session.state = game.state;
                 req.session.currentQuestion = game.getNextQuestion();
             } else {
+                winston.info(`GET /: Continuing session ${req.session.id}`);
                 game = new DotaTriviaGame(this.itemStore, req.session.state);
                 if(req.session.answeredLastQuestionCorrectly === true) {
                     req.session.currentQuestion = game.getNextQuestion();
@@ -50,6 +53,7 @@ class EntryPoint {
         
         this.app.post('/', (req, res) => {
             if(req.session.state === undefined) {
+                winston.error(`POST /: undefined session state`);
                 res.statusCode = 400;
                 res.send('game state is undefined');
                 return;
@@ -57,11 +61,13 @@ class EntryPoint {
             
             let answer = req.body.answer;
             if(answer === undefined) {
+                winston.error(`POST /: no answer provided`);
                 res.statusCode = 400;
                 res.send('no answer provided');
                 return;
             }            
             if(!(answer instanceof Array) || answer.some(component => typeof component !== "string")) {
+                winston.error(`POST /: malformed answer provided`);
                 res.statusCode = 400;
                 res.send('answer is not an array of components');
                 return;
@@ -71,11 +77,12 @@ class EntryPoint {
             let answerCheck = game.submitAnswer(req.session.currentQuestion, answer);
             req.session.answeredLastQuestionCorrectly = answerCheck.isAnswerCorrect;
             req.session.state = answerCheck.state;
+            winston.error(`POST /: ()`, req.session.state);
             res.send(req.session.state);
         });
         
         this.app.listen(port, _ => {
-            console.log(`Listening to port ${port}`);
+            winston.info(`Listening to port ${port}`);
         });
     }
 
@@ -83,7 +90,7 @@ class EntryPoint {
         this.itemStore.initialize()
             .then(() => this.initEndpoints())
             .catch(e => {
-                console.error(`Item store failed to initialize, error: ${e.message}, exiting`);
+                winston.error(`Item store failed to initialize, error: ${e.message}, exiting`);
             });
     }
 }
