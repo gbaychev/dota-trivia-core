@@ -123,14 +123,24 @@ module.exports = class DotaItemStore {
 
     /*
      * Selects an item for the next question of the game
-     * @returns an item, containg the needed and filler components
+     * @returns an object containing the item and the needed_components for this item
      */
     pickItem () {
         let itemSlot = Math.floor(Math.random() * 10000) % this.itemsToPickFromCount;
         let item = Object.values(this.itemsToPickFrom)[itemSlot];
         let fillerComponents = this.pickFillerComponents(item);
+        let needed_components = item.needed_components;
+        fillerComponents = fillerComponents.concat(needed_components);
 
-        return Object.assign(item, { fillerComponents });
+        for (let i = fillerComponents.length; i; i--) {
+            let j = Math.floor(Math.random() * i);
+            [fillerComponents[i - 1], fillerComponents[j]] = [fillerComponents[j], fillerComponents[i - 1]];
+        }
+
+        delete item.needed_components;
+
+        item =  Object.assign(item, { components: fillerComponents });
+        return { item, needed_components};
     }
 
     /*

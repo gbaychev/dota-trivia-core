@@ -48,7 +48,7 @@ class EntryPoint {
                 }
             }
             
-            res.send(req.session.currentQuestion);
+            res.send(req.session.currentQuestion.item);
         });
         
         this.app.post('/', (req, res) => {
