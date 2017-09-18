@@ -1,4 +1,5 @@
 const winston = require('winston');
+require("winston-azure-blob-transport");
 
 let logger = undefined;
 
