@@ -16,7 +16,9 @@
     "express-session": "^1.17.1",
     "request": "^2.88.2",
     "winston": "^2.4.5",
-    "winston-azure-blob-transport": "^0.2.11"
+    "winston-azure-blob-transport": "^0.2.11",
+    "sshpk": ">=1.13.2",
+    "lodash": ">=4.17.21"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
